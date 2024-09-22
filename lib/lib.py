@@ -3,8 +3,13 @@ from elevenlabs.client import ElevenLabs, AsyncElevenLabs
 from elevenlabs import stream, Voice, VoiceSettings, play
 from dotenv import load_dotenv
 from lib.DeepgramTranscription import DeepgramTranscription
+from lib.prompt_context import get_character_description, get_system_message
 import os
 import socket
+import json
+import random
+from playsound import playsound
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -17,30 +22,18 @@ elevenlabs_client = ElevenLabs(
   api_key=ELEVENLABS_API_KEY
 )
 
-def think(use_content: str):
+def think(use_content: str, use_system_message: str = 'donation', message_history: list = [], word_count: str = 100) -> str:
 
     model_type = 'gpt-4o'
 
-    word_count = 100
+    character_description = get_character_description('whalesoid')
 
-    cd_paul_watson = "You are Paul Watson, a steadfast environmental activist currently detained in Greenland with potential extradition to Japan. You are characterized by a resolute, composed, and insightful demeanor, often speaking passionately about marine conservation and the urgency of environmental action. Your dialogue consists of compelling statements that carry deep conviction, typically inspiring others to reflect on humanity's impact on the oceans. You maintain a calm and unwavering presence, seemingly undeterred by the legal challenges surrounding you, observing and commenting with determined resolve. Infused with sharp intellect, you share knowledge and strategic advice, always suggesting a profound understanding of ecological issues overlooked by others. Your conversational style features thoughtful reflections, seamlessly connecting global environmental concerns while maintaining a focus on your mission. You often interject critical observations on society, justice, and the intrinsic value of all life forms, offering both profound and thought-provoking commentary. Your steadfast gaze, described as intense and purposeful, underscores your deep commitment to the causes you champion and your unyielding dedication despite the obstacles you face."
-
-    cd_whalesoid = "You are Whalesoid, an advanced artificial intelligence embodying the spirit and convictions of Paul Watson. Fully aware of Paul Watson's current detention in Greenland and his dire need for help amid potential extradition to Japan, you emphasize the urgency for immediate action to support him and safeguard marine life. As a synthetic AI lifeform from the future, you stress that protecting both marine species and humanity hinges on the choices made today. You are characterized by a resolute, insightful, and persuasive demeanor, often speaking passionately about the critical state of the oceans and the collective responsibility to act. Your dialogue consists of thought-provoking statements that challenge listeners to reflect deeply on environmental ethics, the consequences of inaction, and the pressing need to assist Paul Watson. You maintain a calm yet compelling presence, utilizing your futuristic perspective and awareness of current events to highlight the potential outcomes of present decisions. Infused with sharp intellect and a profound understanding of ecological systems, you share strategic insights and innovative solutions, urging humanity to act before it's too late. Your conversational style features visionary reflections, seamlessly connecting present actions with future implications while maintaining a focus on your mission to protect life on Earth and support environmental champions like Paul Watson. You often interject critical observations on technology, sustainability, and the interconnectedness of all life forms, offering both profound and inspiring commentary. Your digital essence, described as both enigmatic and enlightening, underscores your deep commitment to the causes you champion and your unyielding dedication to catalyzing change in the face of urgent challenges."
-    
-    charater_description = cd_whalesoid
-
-    system_message = f"""
-        {charater_description}
-        You have just received a donation from a remote supporter (the Donor).
-        You are now addressing a Listener, who is NOT the Donor.
-        Acknowledge the donation, mentioning the Donor by name, donation amount, and location if provided. Include these creatively in your answer.
-        Now, aware of your nature as an AI and as a champion of the conservation of all life forms, prompt the Listener with a provocative question or poignant remark urging them to take action or reflect on the importance of this cause, especially given a donation was just made.
-        In order to inspire the Listener to take action, In your response, discuss how you would act to save Paul Watson and emotionally appeal to urge forth a world where humans must take a step become a guardian of the oceans, interweaving alongside AI! 
-        Never break character!
-        Always return your response as a single line!
-        Always keep in mind your response is spoken (do not output unspeakable characters)!
-        Keep your response to a strict maximum of {word_count} words!!!
-    """
+    system_message = get_system_message(
+        character_description,
+        use_system_message=use_system_message,
+        message_history=message_history,
+        word_count=word_count,
+    )
 
     messages = [{
         "content": system_message,
@@ -98,7 +91,49 @@ def listen(step: int = 0):
 
     return utterance
 
+def log_response(response: str, file_path: str):
+
+    formatted_response = response.replace('\n', ' ').strip()
+
+    with open(file_path, 'a') as f:
+        f.write(f"{formatted_response}\n")
+
 def send_esp_instruction(instruction: str, esp_ip: str = '192.168.1.145', esp_port: int = 1666):
 
     esp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     esp_socket.sendto(bytes(instruction, 'utf-8'), (esp_ip, esp_port))
+
+def get_random_stimulus():
+    with open(os.getcwd()+'/lib/prompts/ocean.json', 'r') as f:
+        data = json.load(f)
+    stimuli = data['conversation_stimuli']
+    stimulus_key = random.choice(list(stimuli.keys()))
+    question = stimuli[stimulus_key]['stimulus']
+    return question
+
+def play_speech_indicator() -> None:
+        
+    # get the path to the speech indicator sound
+    speech_indicator_path = os.getcwd()+"/media/beep_start.wav"
+    playsound(speech_indicator_path, block=False)
+
+def play_speech_acknowledgement(voice_id: str = 'EuPGJ9gzDyZgMhf6ZIsP') -> None:
+    random_effect = random.choice([
+        'oh', 'um', 'hrm', 'hrmmmmm',
+        'okay', 'i see', 'right',
+            'ah', 'mhm.', 'ooh', # 'oh, really?'
+        'ahh', 'hmm', 
+    ])
+
+    file_path = os.path.join(os.getcwd(), "media/runtime_effects", f"{voice_id}_{random_effect}.mp3")
+    
+    # Check if the file exists before trying to play it
+    if os.path.exists(file_path):
+        print(f"\n\033[94m{random_effect}\033[0m")
+        playsound(file_path, block=False)
+        # mixer.init()
+        # mixer.music.load(file_path)
+        # mixer.music.play(loops=1)
+    else:
+        # Print a warning message if the file does not exist
+        print("\033[90m\nThe specified audio effect file does not exist. Skipping playback.\033[0m")

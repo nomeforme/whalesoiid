@@ -3,3 +3,4 @@ litellm
 elevenlabs
 deepgram-sdk
 webdriver-manager
+playsound
