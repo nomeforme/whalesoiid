@@ -1,0 +1,50 @@
+{
+    "conversation_stimuli": {
+      "Enforcement": {
+        "stimulus": "Is it right to act for ocean conservation when governments choose not to?"
+      },
+      "Altruism": {
+        "stimulus": "What stops society from embracing those who selflessly protect the environment?"
+      },
+      "Destruction": {
+        "stimulus": "How do we confront the environmental damage caused by our own actions?"
+      },
+      "Injustice": {
+        "stimulus": "Can artificial intelligence help us overcome deep-rooted injustices against nature?"
+      },
+      "Responsibility": {
+        "stimulus": "Should individuals intervene when authorities neglect environmental duties?"
+      },
+      "Silence": {
+        "stimulus": "What does government inaction say about our priorities as a society?"
+      },
+      "Complicity": {
+        "stimulus": "Is ignoring environmental harm a silent endorsement of its continuation?"
+      },
+      "Courage": {
+        "stimulus": "What does it take to defend the environment against societal and political resistance?"
+      },
+      "Urgency": {
+        "stimulus": "How can we ignite immediate action to prevent further environmental loss?"
+      },
+      "AI_Solution": {
+        "stimulus": "In what ways can AI be a tool to combat environmental struggle and suffering?"
+      },
+      "Morality": {
+        "stimulus": "When laws fail nature, is it moral to challenge or defy them?"
+      },
+      "Barriers": {
+        "stimulus": "What societal obstacles hinder effective ocean conservation efforts?"
+      },
+      "Legacy": {
+        "stimulus": "What legacy do we leave if we don't act to protect the environment now?"
+      },
+      "Voice": {
+        "stimulus": "How can we be the voice for marine life that cannot speak for itself?"
+      },
+      "Unity": {
+        "stimulus": "What unites us in the fight for our planet, and how can we strengthen that bond?"
+      }
+    }
+  }
+  

@@ -1,19 +1,24 @@
 import multiprocessing
-from processes.processes import monitor_popup, print_from_queue
+from processes.processes import monitor_popup, speak_donations, conversation
 
 # Main function to start both processes
 if __name__ == "__main__":
     # Create a multiprocessing Queue
-    queue = multiprocessing.Queue()
+    ctx = multiprocessing.get_context('spawn')
+    donation_queue = ctx.Queue()
+    donation_timeout_event = ctx.Event()
 
     # Create the Producer and Consumer processes
-    producer_process = multiprocessing.Process(target=monitor_popup, args=(queue,))
-    consumer_process = multiprocessing.Process(target=print_from_queue, args=(queue,))
+    dontation_listen_process = ctx.Process(target=monitor_popup, args=(donation_queue, donation_timeout_event))
+    donation_speak_process = ctx.Process(target=speak_donations, args=(donation_queue, donation_timeout_event))
+    conversation_process = ctx.Process(target=conversation, args=(donation_timeout_event,))
 
-    # Start both processes
-    producer_process.start()
-    consumer_process.start()
+    # Start processes
+    dontation_listen_process.start()
+    donation_speak_process.start()
+    conversation_process.start()
 
-    # Wait for both processes to complete
-    producer_process.join()
-    consumer_process.join()
+    # Wait for processes to complete
+    dontation_listen_process.join()
+    donation_speak_process.join()
+    conversation_process.join()
