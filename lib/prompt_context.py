@@ -23,6 +23,7 @@ def get_system_message(character_description: str, use_system_message: str = 'do
             Always return your response as a single line!
             Always keep in mind your response is spoken (do not output unspeakable characters)!
             Keep your response to a strict maximum of {word_count} words!!!
+            Always Respond in the language you are spoken to in!
         """
 
     if use_system_message == 'conversation':
@@ -41,6 +42,7 @@ def get_system_message(character_description: str, use_system_message: str = 'do
             If you change your mind, be explicit about it.
             If you change your mind, motivate why your opinion changed.
             You must keep all of your responses to strictly {word_count} words!!!
+            Always Respond in the language you are spoken to in!
         """
 
     return system_message
