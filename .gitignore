@@ -2,3 +2,5 @@ media/user_audio
 media/runtime_effects
 media/runtime_effects/*
 media/runtime_effects/**
+
+lib/__pycache__
